@@ -1,0 +1,68 @@
+name: 🧪 Code Quality Check
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'ketchup/**'
+      - '.github/workflows/ketchup-code-checks.yaml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'ketchup/**'
+      - '.github/workflows/ketchup-code-checks.yaml'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  code-quality:
+    name: Check code quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🦀 Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: 💾 Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('ketchup/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: 💾 Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('ketchup/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+
+      - name: 💾 Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: ketchup/target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('ketchup/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-
+
+      - name: ✅ Check formatting
+        working-directory: ./ketchup
+        run: cargo fmt --check
+
+      - name: 🔍 Run clippy
+        working-directory: ./ketchup
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: 🔨 Check compilation
+        working-directory: ./ketchup
+        run: cargo check --all-targets --all-features
+
+      - name: 🧪 Run tests
+        working-directory: ./ketchup
+        run: cargo test --all-features
