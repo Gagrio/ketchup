@@ -4,12 +4,10 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'ketchup/**'
       - '.github/workflows/ketchup-code-checks.yaml'
   pull_request:
     branches: [ master ]
     paths:
-      - 'ketchup/**'
       - '.github/workflows/ketchup-code-checks.yaml'
   workflow_dispatch:  # Allows manual triggering
 
@@ -52,17 +50,13 @@ jobs:
             ${{ runner.os }}-cargo-build-
 
       - name: ✅ Check formatting
-        working-directory: ./ketchup
         run: cargo fmt --check
 
       - name: 🔍 Run clippy
-        working-directory: ./ketchup
         run: cargo clippy --all-targets --all-features -- -D warnings
 
       - name: 🔨 Check compilation
-        working-directory: ./ketchup
         run: cargo check --all-targets --all-features
 
       - name: 🧪 Run tests
-        working-directory: ./ketchup
         run: cargo test --all-features
