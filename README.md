@@ -26,10 +26,15 @@ A blazingly fast 🦀 Rust-powered tool that collects and archives **all** Kuber
 
 ### Quick Start with Container
 
-The easiest way to use Ketchup is with the pre-built container image:
+The easiest way to use Ketchup is with the pre-built container image.
+
+**Available Images:**
+- `ghcr.io/gagrio/ketchup:latest` - Latest stable release
+- `ghcr.io/gagrio/ketchup:2.0.0` - Specific version (e.g., 2.0.0)
+- See all available versions: [GitHub Releases](https://github.com/gagrio/ketchup/releases)
 
 ```bash
-# Basic collection from all namespaces
+# Basic collection from all namespaces (using latest)
 podman run -v ~/.kube/config:/kubeconfig:ro,Z \
            -v /tmp:/tmp:Z \
            ghcr.io/gagrio/ketchup:latest \
@@ -46,6 +51,12 @@ podman run -v ~/.kube/config:/kubeconfig:ro,Z \
            -v /tmp:/tmp:Z \
            ghcr.io/gagrio/ketchup:latest \
            --kubeconfig /kubeconfig --output /tmp -n "kube-system,default" --verbose
+
+# Use a specific version (recommended for production)
+podman run -v ~/.kube/config:/kubeconfig:ro,Z \
+           -v /tmp:/tmp:Z \
+           ghcr.io/gagrio/ketchup:2.0.0 \
+           --kubeconfig /kubeconfig --output /tmp --verbose
 ```
 
 **Note:** The `:Z` flag is required for SELinux systems (RHEL, CentOS, Fedora, SUSE). On non-SELinux systems, it's safely ignored.
@@ -66,9 +77,13 @@ podman run -v ~/.kube/config:/kubeconfig:ro,Z \
 ```
 
 **Notes:**
-- The official image is available at `ghcr.io/gagrio/ketchup:latest`
+- **Container Images:**
+  - `latest` tag: Points to the most recent stable release
+  - Version tags: Pin to specific versions (e.g., `2.0.0`, `2.1.0`)
+  - All releases: https://github.com/gagrio/ketchup/releases
 - Custom builds are useful for testing unreleased features or modifications
 - If your kubeconfig points to `localhost` or `127.0.0.1`, add `--net=host` to the run command
+- **Recommendation:** Use version tags (e.g., `:2.0.0`) in production for reproducibility
 
 ### Installation from Source
 
@@ -79,8 +94,8 @@ If you want to build from source instead of using the container image:
 
 ```bash
 # Clone the repository
-git clone https://github.com/Gagrio/suse-support-material-local.git
-cd suse-support-material-local/ketchup
+git clone https://github.com/gagrio/ketchup.git
+cd ketchup
 
 # Build the tool
 cargo build --release
